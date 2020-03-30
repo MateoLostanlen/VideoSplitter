@@ -1,6 +1,7 @@
 import ipywidgets as widgets
 import pathlib
 import pandas as pd
+import numpy as np
 from datetime import datetime
 from IPython.display import display
 
@@ -46,6 +47,7 @@ class AnnotationChecker:
         else:
             self.labels = pd.read_csv(labels)
 
+        self.labels.index=np.arange(len(self.labels))
         self.menus = pd.Series(index=self.labels.index)
         accordion = widgets.Accordion()
         for fBase, fgroup in self.labels.groupby('fBase'):
@@ -55,7 +57,7 @@ class AnnotationChecker:
                 imgFiles = [self.inputdir / i for i in state.imgFile.iloc[[0, -1]]]
                 images = [getImageWidget(imgFile) for imgFile in imgFiles]
                 menu = self.getMenu(state.iloc[0])
-                self.menus[state.index] = menu
+                self.menus.iloc[state.index] = menu
                 hbox = widgets.HBox(images + [menu])
                 tab.children += (hbox,)
                 tab.set_title(len(tab.children) - 1, f'Frames {int(first)}-{int(last)}')
